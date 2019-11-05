@@ -22,14 +22,14 @@ jobs:
     - name: Rename BucketName
       run: "sed 's/<BUCKET_NAME>/${{ secrets.BucketName }}/g' app.yaml > app.yaml"
 
-    - name: Rename url
-      run: "sed 's/CORS_URL/${{ secrets.CORSURL }}/g' gcs_cors.json > cors.json"
-
     - name: Setup Lifecycle
       run: "gsutil lifecycle set lifecycle.json gs://${{ secrets.BucketName }}"
 
     - name: Show Lifecycle
       run: "gsutil lifecycle get gs://${{ secrets.BucketName }}"
+
+    - name: Rename url
+      run: "sed 's/<CORS_URL>/${{ secrets.CORSURL }}/g' gcs_cors.json > cors.json"
 
     - name: Setup cors
       run: "gsutil cors set cors.json gs://${{ secrets.BucketName }}"
