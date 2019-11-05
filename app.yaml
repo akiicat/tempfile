@@ -1,0 +1,33 @@
+# runtime: go112
+# 
+# main: ./main.go
+# 
+# env_variables:
+#   GCLOUD_PROJECT: tempfile-257400
+#   BUCKET_NAME: temp.akiicat.com
+runtime: python27
+threadsafe: yes
+
+main: ./main.py
+
+handlers:
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+- url: .*
+  script: main.app
+
+libraries:
+- name: webapp2
+  version: "2.5.2"
+- name: ssl
+  version: "latest"
+- name: jinja2
+  version: "latest"
+
+env_variables:
+  # BUCKET_NAME: temp.akiicat.com
+  BUCKET_NAME: auto-tempfile-257400
+  SERVICE_JSON_FILE: ./signed-url-key.json
+

@@ -1,0 +1,12 @@
+# pip requirements lib
+lib
+
+# signed url key
+signed-url-key.json
+
+# mac
+.DS_Store
+
+# vim
+*.swp
+*.swo
