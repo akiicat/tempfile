@@ -1,5 +1,5 @@
 
-![](https://github.com/akiicat/short-url/workflows/Deploy%20to%20Google%20Cloud%20Functions/badge.svg)
+![](https://github.com/akiicat/tempfile/workflows/Deploy%20to%20Google%20Cloud/badge.svg)
 
 # Short Url on Google Cloud Function
 
