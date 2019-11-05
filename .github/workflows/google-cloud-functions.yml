@@ -39,7 +39,8 @@ jobs:
 
     - name: Install Require Libaray 
       uses: jefftriplett/python-actions@master
-      run: "pip install -r requirements.txt -t lib"
+      with:
+        args: "pip install -r requirements.txt -t lib"
 
     - name: Deploy to GCP
       uses: actions/gcloud/cli@master
