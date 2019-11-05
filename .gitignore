@@ -4,6 +4,9 @@ lib
 # signed url key
 signed-url-key.json
 
+# deploy key
+deploy-key.json
+
 # mac
 .DS_Store
 

@@ -68,8 +68,19 @@ gsutil cors get gs://${BucketName}
 # Create Service Account
 gcloud iam service-accounts create "signed-url" --display-name "signed-url"
 
+# Grant Service Account with storage object admin
+gcloud projects add-iam-policy-binding ${ProjectID} \
+  --member serviceAccount:signed-url@${ProjectID}.iam.gserviceaccount.com \
+  --role roles/storage.objectAdmin
+
 # Create Key
 gcloud iam service-accounts keys create signed-url-key.json --iam-account signed-url@${ProjectID}.iam.gserviceaccount.com
+
+
+
+
+
+
 ```
 
 ## Install Require Libaray
@@ -84,4 +95,19 @@ pip install -r requirements.txt -t lib
 gcloud app deploy app.yaml --quiet --stop-previous-version
 ```
 
+## Deploy Key (Optional)
+
+```shell
+# Create Service Account
+gcloud iam service-accounts create "deploy-app-engine" --display-name "deploy-app-engine"
+
+# Grant Service Account with appengine admin and storage admin
+gcloud projects add-iam-policy-binding ${ProjectID} \
+  --member serviceAccount:deploy-app-engine@${ProjectID}.iam.gserviceaccount.com \
+  --role roles/appengine.appAdmin \
+  --role roles/storage.admin
+
+# Create Key
+gcloud iam service-accounts keys create deploy-key.json --iam-account deploy-app-engine@${ProjectID}.iam.gserviceaccount.com
+```
 
