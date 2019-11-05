@@ -19,11 +19,14 @@ jobs:
         # https://github.com/actions/gcloud/issues/13#issuecomment-511596628
         GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
 
+    - name: Rename url
+      run: "sed help"
+
     - name: Rename BucketName
-      run: "sed 's/<BUCKET_NAME>/${{ secrets.BucketName }}/g' app.yaml > app.yaml"
+      run: "sed 's,BUCKET_NAME>,${{ secrets.BucketName }},g' app.yaml > app.yaml"
 
     - name: Rename url
-      run: "sed 's/<CORS_URL>/${{ secrets.CORSURL }}/g' gcs_cors.json > cors.json"
+      run: "sed 's,<CORS_URL>,${{ secrets.CORSURL }},g' gcs_cors.json > cors.json"
 
     - name: Create Bucket If Needed
       run: "gsutil mb -b on -c Standard -l asia gs://${{ secrets.BucketName }}"
