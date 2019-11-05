@@ -26,7 +26,7 @@ jobs:
       run: "sed 's/<CORS_URL>/${{ secrets.CORSURL }}/g' gcs_cors.json > cors.json"
 
     - name: Create Bucket If Needed
-      run: "gsutil mb -b on -c Standard -l asia gs://${{ secrts.BucketName }}"
+      run: "gsutil mb -b on -c Standard -l asia gs://${{ secrets.BucketName }}"
 
     - name: Setup Lifecycle
       run: "gsutil lifecycle set lifecycle.json gs://${{ secrets.BucketName }}"
