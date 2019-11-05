@@ -13,7 +13,7 @@ export BucketName=<bucket_name>
 gcloud config set project ${ProjectID}
 
 # Create Bucket
-gsutil mb -b on -c Standard -l asia gs://${BucketName}
+gsutil mb -b on -c Standard -p ${ProjectID} -l asia gs://${BucketName}
 ```
 
 ## enable lifecycle management
@@ -75,12 +75,6 @@ gcloud projects add-iam-policy-binding ${ProjectID} \
 
 # Create Key
 gcloud iam service-accounts keys create signed-url-key.json --iam-account signed-url@${ProjectID}.iam.gserviceaccount.com
-
-
-
-
-
-
 ```
 
 ## Install Require Libaray

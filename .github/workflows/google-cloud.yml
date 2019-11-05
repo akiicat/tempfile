@@ -20,7 +20,7 @@ jobs:
         GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
 
     - name: Rename BucketName
-      run: "sed 's,BUCKET_NAME>,${{ secrets.BucketName }},g' app.yaml > app.yaml"
+      run: "sed 's,<BUCKET_NAME>,${{ secrets.BucketName }},g' app.yaml > app.yaml"
 
     - name: Rename url
       run: "sed 's,<CORS_URL>,${{ secrets.CORSURL }},g' gcs_cors.json > cors.json"
@@ -29,19 +29,19 @@ jobs:
       run: "ls -la"
 
     - name: Create Bucket If Needed
-      run: "gsutil mb -b on -c Standard --project ${{ secrets.ProjectID }} -l asia gs://${{ secrets.BucketName }}"
+      run: "gsutil mb -b on -c Standard -p ${{ secrets.ProjectID }} -l asia gs://${{ secrets.BucketName }}"
 
     - name: Setup Lifecycle
-      run: "gsutil lifecycle set lifecycle.json gs://${{ secrets.BucketName }}"
+      run: "gsutil lifecycle set -p ${{ secrets.ProjectID }} lifecycle.json gs://${{ secrets.BucketName }}"
 
     - name: Show Lifecycle
-      run: "gsutil lifecycle get gs://${{ secrets.BucketName }}"
+      run: "gsutil lifecycle get -p ${{ secrets.ProjectID }} gs://${{ secrets.BucketName }}"
 
     - name: Setup cors
-      run: "gsutil cors set cors.json gs://${{ secrets.BucketName }}"
+      run: "gsutil cors set -p ${{ secrets.ProjectID }} cors.json gs://${{ secrets.BucketName }}"
 
     - name: Show cors
-      run: "gsutil cors get gs://${{ secrets.BucketName }}"
+      run: "gsutil cors get -p ${{ secrets.ProjectID }} gs://${{ secrets.BucketName }}"
 
     - name: Signed Url Key
       run: "echo ${{ secrets.SignedUrlKey }} | base64 -D > signed-url-key.json"
