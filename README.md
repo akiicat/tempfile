@@ -77,6 +77,12 @@ gcloud projects add-iam-policy-binding ${ProjectID} \
 gcloud iam service-accounts keys create signed-url-key.json --iam-account signed-url@${ProjectID}.iam.gserviceaccount.com
 ```
 
+## Setup Datastore Index
+
+```shell
+gcloud datastore create-indexes index.yaml
+```
+
 ## Install Require Libaray
 
 ```shell

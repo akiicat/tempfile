@@ -9,7 +9,7 @@
          * @param key Datastore Entity key (urlsafe)
          */
         function postUploadHandler(key) {
-            $.post('/postdownload/',
+            $.post('/postdownload',
                 {
                     key: key
                 })
@@ -55,7 +55,7 @@
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
                 var filename = file.name;
-                $.getJSON("/get_signed_url/", {
+                $.getJSON("/get_signed_url", {
                         filename: filename,
                         content_type: file.type
                     },
