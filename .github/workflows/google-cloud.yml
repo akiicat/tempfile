@@ -40,7 +40,7 @@ jobs:
 
     - name: Create Bucket If Needed
       run: |
-        gsutil mb -b on -c Standard -p ${{ secrets.ProjectID }} -l asia gs://${{ secrets.BucketName }}
+        gsutil ls -b -p ${{ secrets.ProjectID }} gs://${{ secrets.BucketName }} || gsutil mb -b on -c Standard -p ${{ secrets.ProjectID }} -l asia gs://${{ secrets.BucketName }}
 
     - name: Create Datastore Indexes If Needed
       run: |
