@@ -10,20 +10,25 @@ jobs:
     - name: Repo Checkout to Master
       uses: actions/checkout@master
 
-    - name: List Files
-      run: "ls -la"
-
     - name: Setup Google Cloud
       uses: actions/gcloud/auth@master
       env:
         # https://github.com/actions/gcloud/issues/13#issuecomment-511596628
         GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
 
-    - name: Rename BucketName
-      run: "sed 's,<BUCKET_NAME>,${{ secrets.BucketName }},g' app.yaml > app.yaml"
+    - name: Setup Signed Url Key
+      run: |
+        echo ${{ secrets.SignedUrlKey }} | base64 -d > signed-url-key.json
 
-    - name: Rename url
-      run: "sed 's,<CORS_URL>,${{ secrets.CORSURL }},g' gcs_cors.json > cors.json"
+    - name: Setup Google Cloud Deploy Key
+      run: |
+        echo ${{ secrets.GCLOUD_AUTH }} | base64 -d > deploy-key.json
+        gcloud auth activate-service-account --key-file ./deploy-key.json
+
+    - name: Rename Env Name: BucketName and CORSURL
+      run: |
+        sed 's,<BUCKET_NAME>,${{ secrets.BucketName }},g' app.yaml > app.yaml
+        sed 's,<CORS_URL>,${{ secrets.CORSURL }},g' gcs_cors.json > cors.json
 
     - name: List Files
       run: "ls -la"
@@ -31,20 +36,18 @@ jobs:
     - name: Create Bucket If Needed
       run: "gsutil mb -b on -c Standard -p ${{ secrets.ProjectID }} -l asia gs://${{ secrets.BucketName }}"
 
-    - name: Setup Lifecycle
-      run: "gsutil lifecycle set -p ${{ secrets.ProjectID }} lifecycle.json gs://${{ secrets.BucketName }}"
+    - name: Create Datastore Indexes If Needed
+      run: "gcloud datastore indexes create index.yaml --quiet"
 
-    - name: Show Lifecycle
-      run: "gsutil lifecycle get -p ${{ secrets.ProjectID }} gs://${{ secrets.BucketName }}"
+    - name: Setup Lifecycle
+      run: |
+        gsutil lifecycle set -p ${{ secrets.ProjectID }} lifecycle.json gs://${{ secrets.BucketName }}
+        gsutil lifecycle get -p ${{ secrets.ProjectID }} gs://${{ secrets.BucketName }}
 
     - name: Setup cors
-      run: "gsutil cors set -p ${{ secrets.ProjectID }} cors.json gs://${{ secrets.BucketName }}"
-
-    - name: Show cors
-      run: "gsutil cors get -p ${{ secrets.ProjectID }} gs://${{ secrets.BucketName }}"
-
-    - name: Signed Url Key
-      run: "echo ${{ secrets.SignedUrlKey }} | base64 -D > signed-url-key.json"
+      run: |
+        gsutil cors set -p ${{ secrets.ProjectID }} cors.json gs://${{ secrets.BucketName }}
+        gsutil cors get -p ${{ secrets.ProjectID }} gs://${{ secrets.BucketName }}
 
     - name: Install Require Libaray 
       uses: jefftriplett/python-actions@master
