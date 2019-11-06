@@ -16,6 +16,10 @@ jobs:
         # https://github.com/actions/gcloud/issues/13#issuecomment-511596628
         GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
 
+    - name: Set Default ProjectID
+      run: |
+        gcloud config set project ${{ secrets.ProjectID }}
+
     - name: Setup Signed Url Key
       run: |
         echo ${{ secrets.SignedUrlKey }} | base64 -d > signed-url-key.json
@@ -31,13 +35,16 @@ jobs:
         sed 's,<CORS_URL>,${{ secrets.CORSURL }},g' gcs_cors.json > cors.json
 
     - name: List Files
-      run: "ls -la"
+      run: |
+        ls -la
 
     - name: Create Bucket If Needed
-      run: "gsutil mb -b on -c Standard -p ${{ secrets.ProjectID }} -l asia gs://${{ secrets.BucketName }}"
+      run: |
+        gsutil mb -b on -c Standard -p ${{ secrets.ProjectID }} -l asia gs://${{ secrets.BucketName }}
 
     - name: Create Datastore Indexes If Needed
-      run: "gcloud datastore indexes create index.yaml --quiet"
+      run: |
+        gcloud datastore indexes create index.yaml --quiet
 
     - name: Setup Lifecycle
       run: |
