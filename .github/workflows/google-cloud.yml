@@ -25,7 +25,7 @@ jobs:
         echo ${{ secrets.GCLOUD_AUTH }} | base64 -d > deploy-key.json
         gcloud auth activate-service-account --key-file ./deploy-key.json
 
-    - name: Rename Env Name: BucketName and CORSURL
+    - name: Rename Env Name (BucketName and CORSURL)
       run: |
         sed 's,<BUCKET_NAME>,${{ secrets.BucketName }},g' app.yaml > app.yaml
         sed 's,<CORS_URL>,${{ secrets.CORSURL }},g' gcs_cors.json > cors.json
