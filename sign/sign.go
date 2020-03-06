@@ -3,16 +3,16 @@ package sign
 import (
         "fmt"
         "time"
-        "io/ioutil"
+        "encoding/base64"
         "golang.org/x/oauth2/google"
         "cloud.google.com/go/storage"
       )
 
 func Sign(serviceAccount, bucketName, objectName, method string, expireTime int) (string, error) {
-  jsonKey, err := ioutil.ReadFile(serviceAccount)
-  if err != nil {
-    return "", fmt.Errorf("service key is missing, cannot read the JSON key file, err: %v", err)
-  }
+  jsonKey, err := base64.StdEncoding.DecodeString(serviceAccount)
+	if err != nil {
+		return "", fmt.Errorf("service account decode error: %v", err)
+	}
 
   conf, err := google.JWTConfigFromJSON(jsonKey)
   if err != nil {
