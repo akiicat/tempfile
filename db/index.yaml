@@ -1,0 +1,10 @@
+# Configuration
+# https://cloud.google.com/datastore/docs/tools/indexconfig
+# gcloud datastore indexes create index.yaml
+indexes:
+- kind: File 
+  properties: 
+  - name: Token 
+  - name: CreatedAt 
+    direction: desc
+

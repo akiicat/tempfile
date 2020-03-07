@@ -2,7 +2,9 @@ package db
 
 import (
   "context"
+  "log"
   "fmt"
+  "time"
 
   "cloud.google.com/go/datastore"
 )
@@ -36,7 +38,7 @@ func NewDatastoreDB(projectID string) (FileDatabase, error) {
 	}, nil
 }
 
-func (db *datastoreDB) ListFilesByToken(token string) ([]*File, error) {
+func (db *datastoreDB) ListFilesByToken(token string) (*File, error) {
 	ctx := context.Background()
 	if token == "" {
 		return nil, fmt.Errorf("parameter token is empty")
@@ -49,16 +51,15 @@ func (db *datastoreDB) ListFilesByToken(token string) ([]*File, error) {
     Limit(1)
 
 	keys, err := db.client.GetAll(ctx, q, &files)
-
 	if err != nil {
 		return nil, fmt.Errorf("datastoredb: could not list files: %v", err)
 	}
 
-  fmt.Println("files:", files)
-  fmt.Println("keys:", keys)
-  fmt.Println("len(files):", len(files))
+  if len(keys) == 0 {
+		return nil, fmt.Errorf("Token Not Found: %s", token)
+  }
 
-	return files, nil
+	return files[0], nil
 }
 
 // AddFile saves a given book, assigning it a new ID.
@@ -71,4 +72,5 @@ func (db *datastoreDB) AddFile(b *File) (id int64, err error) {
 	}
 	return k.ID, nil
 }
+
 

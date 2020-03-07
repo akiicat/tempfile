@@ -1,9 +1,0 @@
-# Configuration
-# https://cloud.google.com/datastore/docs/tools/indexconfig
-# gcloud datastore create-indexes index.yaml
-indexes:
-- kind: FileModel
-  properties:
-  - name: token
-  - name: date_created
-    direction: desc

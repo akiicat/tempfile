@@ -15,6 +15,8 @@ type File struct {
 type FileDatabase interface {
 	// AddBook saves a given book, assigning it a new ID.
 	AddFile(b *File) (id int64, err error)
+
+  ListFilesByToken(token string) (*File, error)
 }
 
 
