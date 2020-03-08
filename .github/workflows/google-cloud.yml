@@ -48,9 +48,9 @@ jobs:
     #   run: |
     #     gsutil ls -b -p ${{ secrets.ProjectID }} gs://${{ secrets.BucketName }} || gsutil mb -b on -c Standard -p ${{ secrets.ProjectID }} -l asia gs://${{ secrets.BucketName }}
 
-    - name: Create Datastore Indexes If Needed
-      run: |
-        gcloud datastore indexes create db/index.yaml --quiet
+    # - name: Create Datastore Indexes If Needed
+    #   run: |
+    #     gcloud datastore indexes create db/index.yaml --quiet
 
     - name: Setup Lifecycle
       run: |
