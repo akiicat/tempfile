@@ -13,3 +13,5 @@ deploy-key.json
 # vim
 *.swp
 *.swo
+
+vendor
