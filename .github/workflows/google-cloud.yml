@@ -16,7 +16,7 @@ jobs:
         PROJECT_ID: ${{ secrets.ProjectID }}
         APPLICATION_CREDENTIALS: ${{ secrets.GCLOUD_AUTH }}
       with:
-        args: version
+        args: info
 
     - uses: actions/setup-go@v2-beta
       with:
