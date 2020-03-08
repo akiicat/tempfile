@@ -52,15 +52,15 @@ jobs:
     #   run: |
     #     gcloud datastore indexes create db/index.yaml --quiet
 
-    - name: Setup Lifecycle
-      run: |
-        gsutil lifecycle set -p ${{ secrets.ProjectID }} lifecycle.json gs://${{ secrets.BucketName }}
-        gsutil lifecycle get -p ${{ secrets.ProjectID }} gs://${{ secrets.BucketName }}
+    # - name: Setup Lifecycle
+    #   run: |
+    #     gsutil lifecycle set -p ${{ secrets.ProjectID }} lifecycle.json gs://${{ secrets.BucketName }}
+    #     gsutil lifecycle get -p ${{ secrets.ProjectID }} gs://${{ secrets.BucketName }}
 
-    - name: Setup cors
-      run: |
-        gsutil cors set -p ${{ secrets.ProjectID }} cors.json gs://${{ secrets.BucketName }}
-        gsutil cors get -p ${{ secrets.ProjectID }} gs://${{ secrets.BucketName }}
+    # - name: Setup cors
+    #   run: |
+    #     gsutil cors set -p ${{ secrets.ProjectID }} cors.json gs://${{ secrets.BucketName }}
+    #     gsutil cors get -p ${{ secrets.ProjectID }} gs://${{ secrets.BucketName }}
 
     - name: Setup Env
       run: |
