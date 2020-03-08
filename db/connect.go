@@ -2,9 +2,7 @@ package db
 
 import (
   "context"
-  "log"
   "fmt"
-  "time"
 
   "cloud.google.com/go/datastore"
 )
