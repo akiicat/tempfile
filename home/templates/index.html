@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Multiple files to Google Cloud Storage straight from browser</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        /**
+         * Posts some data to url after upload
+         * @param key Datastore Entity key (urlsafe)
+         */
+        function postUploadHandler(key) {
+            $.post('/postdownload',
+                {
+                    key: key
+                })
+        }
+        /**
+         * Ajax request to Google Cloud Storage
+         * @param url: signed url returned from server
+         * @param file: file object which will be uploaded
+         * @param key: database key
+         */
+        function upload(file, info) {
+            $.ajax({
+                url: info.url,
+                type: 'PUT',
+                data: file,
+                contentType: false,
+                crossDomain: true,
+                processData: false,
+                success: function () {
+                    var link = $('<a>').attr('href', info.url).text('Download')
+                    $('#' + info.token).html(file.name + ' ' + info.url + ' ' + link.prop('outerHTML'))
+                    // postUploadHandler(key)
+                },
+                error: function (result) {
+                    console.log(result);
+                }
+            });
+        }
+        /**
+         * Used as callback in Ajax request (to avoid closure keeping state)
+         */
+        var uploadCallback = function (file) {
+            return function (info) {
+                var loading = $('<p>').attr('id', info.token).text(file.name + ' Uploading...')
+                $('#messages').append(loading)
+                upload(file, info);
+            }
+        };
+        /**
+         * After selecting files and clicking Open button uploading process is initiated automatically
+         * First request to get signed url is made and then actual upload is started
+         * @param files: selected files
+         */
+        function handleFiles(files) {
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var filename = file.name;
+                $.post("/upload", {
+                        filename: filename,
+                        content_type: file.type
+                    },
+                    uploadCallback(file)
+                );
+            }
+        }
+    </script>
+</head>
+<body>
+
+<form action="/" method="POST" enctype="multipart/form-data">
+    Select files: <input type="file" name="file" multiple onchange="handleFiles(this.files)">
+</form>
+
+<div id="messages">
+</div>
+
+<!--
+<form action="https://storage.googleapis.com/YOUR_BUCKET_NAME"
+      method="post" enctype="multipart/form-data">
+  <input name="key" type="text" value="objectName.txt" /><br/>
+  <input name="file" type="file" /><br/>
+  <input type="submit" value="Upload!" />
+</form>
+-->
+
+</body>
+</html>
