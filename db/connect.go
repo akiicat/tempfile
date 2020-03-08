@@ -36,7 +36,7 @@ func NewDatastoreDB(projectID string) (FileDatabase, error) {
 	}, nil
 }
 
-func (db *datastoreDB) ListFilesByToken(token string) (*File, error) {
+func (db *datastoreDB) GetFileByToken(token string) (*File, error) {
 	ctx := context.Background()
 	if token == "" {
 		return nil, fmt.Errorf("parameter token is empty")
