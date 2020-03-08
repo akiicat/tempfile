@@ -1,11 +1,5 @@
-# pip requirements lib
-lib
-
 # signed url key
 signed-url-key.json
-
-# deploy key
-deploy-key.json
 
 # mac
 .DS_Store
@@ -15,3 +9,10 @@ deploy-key.json
 *.swo
 
 vendor
+
+.env
+
+
+# firebase
+.firebaserc
+.firebase
