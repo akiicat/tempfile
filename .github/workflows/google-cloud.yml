@@ -16,6 +16,12 @@ jobs:
         # https://github.com/actions/gcloud/issues/13#issuecomment-511596628
         GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
 
+    - uses: actions/setup-go@v2-beta
+      with:
+        go-version: '^1.13.1' # The Go version to download (if necessary) and use.
+    - name: Get Go Version
+      run: go version
+
     - name: Set Default ProjectID
       run: |
         gcloud config set project ${{ secrets.ProjectID }}
@@ -29,11 +35,6 @@ jobs:
         echo ${{ secrets.GCLOUD_AUTH }} | base64 -d > deploy-key.json
         gcloud auth activate-service-account --key-file ./deploy-key.json
 
-    - name: Rename Env Name (BucketName and CORSURL)
-      run: |
-        sed 's,<BUCKET_NAME>,${{ secrets.BucketName }},g' app.yaml > app.yaml
-        sed 's,<CORS_URL>,${{ secrets.CORSURL }},g' gcs_cors.json > cors.json
-
     - name: List Files
       run: |
         ls -la
@@ -44,7 +45,7 @@ jobs:
 
     - name: Create Datastore Indexes If Needed
       run: |
-        gcloud datastore indexes create index.yaml --quiet
+        gcloud datastore indexes create db/index.yaml --quiet
 
     - name: Setup Lifecycle
       run: |
@@ -56,12 +57,30 @@ jobs:
         gsutil cors set -p ${{ secrets.ProjectID }} cors.json gs://${{ secrets.BucketName }}
         gsutil cors get -p ${{ secrets.ProjectID }} gs://${{ secrets.BucketName }}
 
-    - name: Install Require Libaray 
-      uses: jefftriplett/python-actions@master
-      with:
-        args: "pip install -r requirements.txt -t lib"
+    - name Setup Env
+      run: |
+        echo "PROJECT_ID: ${{  secrets.ProjectID }}" >> .env
+        echo "BUCKET_NAME: ${{  secrets.BucketName }}" >> .env
+        echo "SIGNED_URL_KEY: ${{  secrets.SignedUrlKey }}" >> .env
 
-    - name: Deploy to GCP
-      uses: actions/gcloud/cli@master
-      with:
-        args: "app deploy app.yaml --quiet --stop-previous-version"
+    - name: Deploy Home Function
+      run: |
+        gcloud functions deploy home --source=home --entry-point=HomePage --runtime=go113 --trigger-http --quiet --env-vars-file .env
+        gcloud alpha functions add-iam-policy-binding home --member=allUsers --role=roles/cloudfunctions.invoker
+
+    - name: Deploy Upload Function
+      run: |
+        cd upload
+        go mod vendor
+        cd ..
+        gcloud functions deploy upload --source=upload --entry-point=UploadUrl --runtime=go113 --trigger-http --quiet --env-vars-file .env
+        gcloud alpha functions add-iam-policy-binding upload --member=allUsers --role=roles/cloudfunctions.invoker
+
+    - name: Deploy Download Function
+      run: |
+        cd download
+        go mod vendor
+        cd ..
+        gcloud functions deploy download --source=download --entry-point=DownloadUrl --runtime=go113 --trigger-http --quiet --env-vars-file .env
+        gcloud alpha functions add-iam-policy-binding download --member=allUsers --role=roles/cloudfunctions.invoker
+
