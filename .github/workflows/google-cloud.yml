@@ -67,6 +67,7 @@ jobs:
         echo "PROJECT_ID: ${{  secrets.ProjectID }}" >> .env
         echo "BUCKET_NAME: ${{  secrets.BucketName }}" >> .env
         echo "SIGNED_URL_KEY: ${{  secrets.SignedUrlKey }}" >> .env
+        ls -la .env
 
     - name: Deploy Home Function
       run: |

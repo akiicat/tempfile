@@ -14,6 +14,7 @@
                     key: key
                 })
         }
+
         /**
          * Ajax request to Google Cloud Storage
          * @param url: signed url returned from server
@@ -29,8 +30,12 @@
                 crossDomain: true,
                 processData: false,
                 success: function () {
-                    var link = $('<a>').attr('href', info.url).text('Download')
-                    $('#' + info.token).html(file.name + ' ' + info.url + ' ' + link.prop('outerHTML'))
+                    var link = window.location.href + info.token
+                    var copyTag = $('<a>').attr('href', '#').attr('onclick', 'copyToClipboard("' + link + '")').text('Copy')
+
+                    // var linkTag = $('<a>').attr('href', info.token).text('Download')
+
+                    $('#' + info.token).html(copyTag.prop('outerHTML') + ' ' + link + ' ' + file.name)
                     // postUploadHandler(key)
                 },
                 error: function(xhr, status, err) {
@@ -39,6 +44,7 @@
                 }
             });
         }
+
         /**
          * Used as callback in Ajax request (to avoid closure keeping state)
          */
@@ -49,6 +55,7 @@
                 upload(file, info);
             }
         };
+
         /**
          * After selecting files and clicking Open button uploading process is initiated automatically
          * First request to get signed url is made and then actual upload is started
@@ -66,6 +73,16 @@
                 );
             }
         }
+
+        function copyToClipboard(str) {
+          const el = document.createElement('textarea');
+          el.value = str;
+          document.body.appendChild(el);
+          el.select();
+          document.execCommand('copy');
+          document.body.removeChild(el);
+        };
+
     </script>
 </head>
 <body>
