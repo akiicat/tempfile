@@ -57,7 +57,7 @@ jobs:
         gsutil cors set -p ${{ secrets.ProjectID }} cors.json gs://${{ secrets.BucketName }}
         gsutil cors get -p ${{ secrets.ProjectID }} gs://${{ secrets.BucketName }}
 
-    - name Setup Env
+    - name: Setup Env
       run: |
         echo "PROJECT_ID: ${{  secrets.ProjectID }}" >> .env
         echo "BUCKET_NAME: ${{  secrets.BucketName }}" >> .env
