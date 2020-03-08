@@ -30,7 +30,7 @@
                 crossDomain: true,
                 processData: false,
                 success: function () {
-                    var link = window.location.href + info.token
+                    var link = window.location.origin + "/" + info.token
                     var copyTag = $('<a>').attr('href', '#').attr('onclick', 'copyToClipboard("' + link + '")').text('Copy')
 
                     // var linkTag = $('<a>').attr('href', info.token).text('Download')
