@@ -7,11 +7,11 @@ import (
   "time"
 
   "net/http"
+  "net/url"
 
   "math/rand"
   "encoding/json"
 
-  "github.com/akiirobot/tempfile/sign"
   "github.com/akiirobot/tempfile/db"
 )
 
@@ -19,8 +19,8 @@ import (
 type Sign struct {
   Url    string `json:"url"`
   Token  string `json:"token"`
+  Name   string `json:"name"`
 }
-
 
 func UploadUrl(w http.ResponseWriter, r *http.Request) {
   if r.Method != "POST" {
@@ -29,20 +29,23 @@ func UploadUrl(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  objectName := r.PostFormValue("filename")
-  token := randString(3)
-  filename := token + "/" + objectName
+  project := os.Getenv("PROJECT_ID")
+  bucket := os.Getenv("BUCKET_NAME")
 
-  if filename == "" {
+  filename := r.PostFormValue("filename")
+  token := randString(3)
+  fullname := token + "/" + filename
+
+  if fullname == "" {
     log.Printf("Filename is empty")
     http.Error(w, "400 - Status Bad Request", http.StatusBadRequest)
     return
   }
 
-  c, err := db.NewDatastoreDB(os.Getenv("PROJECT_ID"))
+  c, err := db.NewDatastoreDB(project)
   if err != nil {
     http.Error(w, "500 - Status Internal Server Error", http.StatusInternalServerError)
-    log.Printf("New Datastore DB by Project %s error: %v", os.Getenv("PROJECT_ID"), err)
+    log.Printf("New Datastore DB by Project %s error: %v", project, err)
     return
   }
 
@@ -67,24 +70,30 @@ func UploadUrl(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  url, err := sign.Sign(os.Getenv("SERVICE_JSON_FILE"), os.Getenv("BUCKET_NAME"), filename, "POST", 15)
-  if err != nil {
-    log.Fatalln(err)
-    http.Error(w, "403 - Status Forbidden - " + err.Error(), http.StatusForbidden)
-    return
-  }
+  // url, err := sign.Sign(os.Getenv("SIGNED_URL_KEY"), os.Getenv("BUCKET_NAME"), fullname, "POST", 15)
+  // if err != nil {
+  //   log.Fatalln("sign url error ", err)
+  //   http.Error(w, "403 - Status Forbidden - " + err.Error(), http.StatusForbidden)
+  //   return
+  // }
 
-  obj := Sign{url, token}
+  u := signPublic(bucket, token, filename)
+
+  obj := Sign{u, token, url.PathEscape(filename)}
   rtn, err := json.Marshal(obj)
   if err != nil {
-		// return nil, fmt.Errorf("Json marshal %s, error: %v", fullname, err)
-    log.Fatalln(err)
+    log.Fatalln("JSON marshal error: ", err)
     http.Error(w, "500 - Status Forbidden - " + err.Error(), http.StatusInternalServerError)
     return
   }
 
+  log.Println("response", rtn)
   w.Header().Set("Content-Type", "application/json")
   w.Write(rtn)
+}
+
+func signPublic(bucket, token, name string) string {
+  return "https://storage.googleapis.com/" + bucket + "/" + token + "/" + url.PathEscape(name)
 }
 
 func randString(n int) string {
