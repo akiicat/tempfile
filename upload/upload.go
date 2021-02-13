@@ -2,7 +2,6 @@ package upload
 
 import (
   "os"
-  "fmt"
   "log"
   "time"
 
@@ -20,11 +19,12 @@ type Sign struct {
   Url    string `json:"url"`
   Token  string `json:"token"`
   Name   string `json:"name"`
+	Nonce  string `json:"nonce"`
 }
 
 func UploadUrl(w http.ResponseWriter, r *http.Request) {
   if r.Method != "POST" {
-    fmt.Printf("status method %s is not allowd, only allowed post", r.Method)
+    log.Printf("status method %s is not allowd, only allowed post", r.Method)
     http.Error(w, "405 - Status Method Not Allowed - " + r.Method, http.StatusMethodNotAllowed)
     return
   }
@@ -35,6 +35,7 @@ func UploadUrl(w http.ResponseWriter, r *http.Request) {
   filename := r.PostFormValue("filename")
   token := randString(3)
   fullname := token + "/" + filename
+	nonce := r.PostFormValue("nonce")
 
   if fullname == "" {
     log.Printf("Filename is empty")
@@ -70,16 +71,7 @@ func UploadUrl(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  // url, err := sign.Sign(os.Getenv("SIGNED_URL_KEY"), os.Getenv("BUCKET_NAME"), fullname, "POST", 15)
-  // if err != nil {
-  //   log.Fatalln("sign url error ", err)
-  //   http.Error(w, "403 - Status Forbidden - " + err.Error(), http.StatusForbidden)
-  //   return
-  // }
-
-  u := signPublic(bucket, token, filename)
-
-  obj := Sign{u, token, url.PathEscape(filename)}
+	obj := newSign(bucket, token, filename, nonce)
   rtn, err := json.Marshal(obj)
   if err != nil {
     log.Fatalln("JSON marshal error: ", err)
@@ -90,6 +82,15 @@ func UploadUrl(w http.ResponseWriter, r *http.Request) {
   log.Println("response", rtn)
   w.Header().Set("Content-Type", "application/json")
   w.Write(rtn)
+}
+
+func newSign(bucket, token, filename, nonce string) Sign {
+	return Sign{
+		signPublic(bucket, token, filename),
+		token,
+		url.PathEscape(filename),
+		nonce,
+	}
 }
 
 func signPublic(bucket, token, name string) string {
@@ -105,6 +106,4 @@ func randString(n int) string {
   }
   return string(b)
 }
-
-
 

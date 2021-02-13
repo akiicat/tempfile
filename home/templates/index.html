@@ -1,18 +1,243 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Upload Multiple files to Google Cloud Storage straight from browser</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+    <style>
+    /* https://codepen.io/stephanrusu/pen/bGVYmMO */
+    *,
+    *:before,
+    *:after {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #f7f7f7;
+      margin: 2rem 0;
+    }
+
+    .container {
+      width: 45rem;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 0.75rem 1.5rem rgba(19, 19, 19, 0.03);
+    }
+
+    .dropzone {
+      border: 0.0625rem solid #c6ccd6;
+      border-radius: 0.5rem;
+      background-color: #f9f9fb;
+      display: block;
+    }
+    .dropzone .dropzone-container {
+      padding: 2rem 0;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #8c96a8;
+      z-index: 20;
+    }
+    .dropzone .dropzone-container .dropzone-title {
+      padding-top: 1.5rem;
+    }
+    .dropzone .dropzone-container .browse {
+      text-decoration: underline;
+      color: #007bff;
+    }
+    .dropzone .file-input {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      visibility: hidden;
+      cursor: pointer;
+    }
+
+    .file-icon {
+      /* Need position to allow stacking of pseudo-elements */
+      position: relative;
+      width: 4rem;
+      height: 5.25rem;
+      /* Padding for demo purposes */
+      padding: 0.625rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+      font-size: 2rem;
+      color: #007bff;
+      /* Second sheet of paper */
+    }
+    .file-icon, .file-icon:before, .file-icon:after {
+      background-color: #ffffff;
+      border-radius: 0.25rem;
+      border: 0.125rem solid #b8bec9;
+    }
+    .file-icon:before, .file-icon:after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 0.125rem solid #ccd0d8;
+    }
+    .file-icon:before {
+      left: -0.625rem;
+      top: 0.5rem;
+      z-index: -1;
+    }
+    .file-icon:after {
+      top: -0.25rem;
+      right: -0.25rem;
+      left: auto;
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 0.25rem;
+      border-width: 0.625rem;
+      border-style: solid;
+      border-color: #f9f9fb #f9f9fb #b8bec9 #b8bec9;
+    }
+    </style>
+
+    <style>
+    /* https://codepen.io/Tnifey/pen/JjoJZZQ */
+    .progress {
+      margin-bottom: 2rem;
+      width: 100%;
+      height: 8px;
+      background: #eaeaea;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+      justify-content: flex-start;
+      border-radius: 4px;
+    }
+    .progress:before {
+      content: ' ';
+      display: block;
+      position: absolute;
+      width: var(--width, 25%);
+      height: 100%;
+      background: #ad2d6d;
+    }
+    .progress.progress--indeterminate:before {
+      animation: 1.5s progressIndeterminate infinite;
+    }
+    @-moz-keyframes progressIndeterminate {
+      from {
+        width: 0;
+        margin-left: 0;
+        margin-right: 100%;
+      }
+      50% {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+      }
+      to {
+        width: 0;
+        margin-left: 100%;
+        margin-right: 0;
+      }
+    }
+    @-webkit-keyframes progressIndeterminate {
+      from {
+        width: 0;
+        margin-left: 0;
+        margin-right: 100%;
+      }
+      50% {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+      }
+      to {
+        width: 0;
+        margin-left: 100%;
+        margin-right: 0;
+      }
+    }
+    @-o-keyframes progressIndeterminate {
+      from {
+        width: 0;
+        margin-left: 0;
+        margin-right: 100%;
+      }
+      50% {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+      }
+      to {
+        width: 0;
+        margin-left: 100%;
+        margin-right: 0;
+      }
+    }
+    @keyframes progressIndeterminate {
+      from {
+        width: 0;
+        margin-left: 0;
+        margin-right: 100%;
+      }
+      50% {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+      }
+      to {
+        width: 0;
+        margin-left: 100%;
+        margin-right: 0;
+      }
+    }
+    </style>
+
+    <style>
+    /* https://stackoverflow.com/questions/41343496/centering-a-bootstrap-progress-bar-vertically-with-a-div */
+    .middle {
+      display: flex;
+      align-items: center;
+    }
+    .middle-inner {
+      margin: 0;
+    }
+    </style>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
         /**
          * Posts some data to url after upload
          * @param key Datastore Entity key (urlsafe)
          */
-        function postUploadHandler(key) {
-            $.post('/postdownload',
-                {
-                    key: key
-                })
+        function afterUpload(file, nonce, info) {
+            // do nothing
+            return;
+            $.post('/postdownload', { key: nonce })
+        }
+
+        function uploadProgress(event) {
+            if (event.lengthComputable) {
+                var percentComplete = (event.loaded / event.total) * 100;
+                //Do something with upload progress here
+                console.log(event.loaded)
+                console.log(event.total)
+                console.log(percentComplete)
+            }
         }
 
         /**
@@ -21,7 +246,7 @@
          * @param file: file object which will be uploaded
          * @param key: database key
          */
-        function upload(file, info) {
+        function upload(file, nonce, info) {
             $.ajax({
                 url: info.url,
                 type: 'PUT',
@@ -29,18 +254,26 @@
                 contentType: "multipart/form-data",
                 crossDomain: true,
                 processData: false,
+                xhr: function() {
+                  // https://stackoverflow.com/questions/42216409/jquerys-uploadprogress-not-firing-in-ajax
+                  var xhr = new window.XMLHttpRequest();
+                  xhr.upload.addEventListener("progress", uploadProgress, false);
+                  return xhr;
+                },
                 success: function () {
+                    console.log("SUcces")
                     var link = window.location.origin + "/" + info.token
-                    var copyTag = $('<a>').attr('href', '#').attr('onclick', 'copyToClipboard("' + link + '")').text('Copy')
 
-                    // var linkTag = $('<a>').attr('href', info.token).text('Download')
+                    $('#nonce-'+nonce).empty();
+                    $('#nonce-'+nonce).append($("<a class='btn btn-success btn-sm me-2' role='button' href='#'>").attr('onclick', 'copyToClipboard("' + link + '")').text('Copy'))
+                    $('#nonce-'+nonce).append($("<a>").attr('href', info.token).text(link))
 
-                    $('#' + info.token).html(copyTag.prop('outerHTML') + ' ' + link + ' ' + file.name)
-                    // postUploadHandler(key)
+                    afterUpload(file, nonce, info)
                 },
                 error: function(xhr, status, err) {
                   console.log("error", xhr.responseText)
                   console.log("error", err.Message)
+                  $('#nonce-'+nonce).html($("<span>").text("Error: ").append($(xhr.responseText)))
                 }
             });
         }
@@ -48,11 +281,12 @@
         /**
          * Used as callback in Ajax request (to avoid closure keeping state)
          */
-        var uploadCallback = function (file) {
+        var startUpload = function (file, nonce) {
             return function (info) {
-                var loading = $('<p>').attr('id', info.token).text(file.name + ' Uploading...')
-                $('#messages').append(loading)
-                upload(file, info);
+                var row = $("<div class='progress middle-inner' style='--width: 0%'>")
+                    .append($("<div class='bar'>"))
+                $('#nonce-'+nonce).html(row)
+                upload(file, nonce, info);
             }
         };
 
@@ -64,13 +298,31 @@
         function handleFiles(files) {
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
-                var filename = file.name;
+                var nonce = makeNonce(5);
                 $.post("/upload", {
-                        filename: filename,
-                        content_type: file.type
+                        filename: file.name,
+                        content_type: file.type,
+                        nonce: nonce
                     },
-                    uploadCallback(file)
+                    startUpload(file, nonce)
                 );
+
+                // <div class="row">
+                //   <div class="col-4">col-4</div>
+                //   <div class="col-8">
+                //     <div class="progress progress--indeterminate">
+                //       <div class="bar"></div>
+                //     </div>
+                //   </div>
+                // </div>
+
+                console.log(nonce)
+                var row = $("<div class='row'>")
+                  .append($("<div class='col-4 middle'>").text(file.name))
+                  .append($("<div class='col-8 middle'>").attr('id', "nonce-"+nonce)
+                    .append($("<div class='progress progress--indeterminate middle-inner'>")
+                      .append($("<div class='bar'>"))))
+                $('#messages').append(row)
             }
         }
 
@@ -83,16 +335,49 @@
           document.body.removeChild(el);
         };
 
+        function makeNonce(length) {
+           var result           = '';
+           var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+           var charactersLength = characters.length;
+           for ( var i = 0; i < length; i++ ) {
+              result += characters.charAt(Math.floor(Math.random() * charactersLength));
+           }
+           return result;
+        }
+
     </script>
 </head>
 <body>
+<!--
+  <form action="/" method="POST" enctype="multipart/form-data">
+      Select files: <input type="file" name="file" multiple onchange="handleFiles(this.files)">
+  </form>
+  <input id="files" name="files[]" type="file" class="file-input" />-->
 
-<form action="/" method="POST" enctype="multipart/form-data">
-    Select files: <input type="file" name="file" multiple onchange="handleFiles(this.files)">
-</form>
+  <!-- https://codepen.io/stephanrusu/pen/bGVYmMO -->
+  <form action="/" method="POST" enctype="multipart/form-data">
+    <div id="id_dropzone" class='container'>
+      <div class="dropzone">
+        <label for="files" class="dropzone-container">
+          <div class="file-icon">+</div>
+          <div class="dropzone-title">
+            Drag and drop your files or <span class='browse'>browse</span> your files
+          </div>
+        </label>
+        <input id="files" type="file" name="files" class="file-input" multiple onchange="handleFiles(this.files)">
+      </div>
+    </div>
+  </form>
 
-<div id="messages">
-</div>
+  <div id="messages" class="container mt-2">
+    <div class="row">
+      <div class="col-4 fw-bold middle">Filename</div>
+      <div class="col-8 fw-bold middle">Status</div>
+    </div>
+  </div>
 
+
+  <!-- Option 1: Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
 </body>
 </html>
