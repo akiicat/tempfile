@@ -1,12 +1,12 @@
 package home
 
 import (
-	"os"
 	"fmt"
+	"io/ioutil"
 	"log"
-  "net/http"
+	"net/http"
+	"os"
 )
-
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
 	path, err := os.Getwd()
@@ -26,8 +26,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "\t%v\n", f.Name())
 	}
 
-  // w.Header().Set("Content-Type", "text/html")
-  // home := "/srv/vendor/home/templates/index.html"
-  // http.ServeFile(w, r, home)
+	// w.Header().Set("Content-Type", "text/html")
+	// home := "/srv/vendor/home/templates/index.html"
+	// http.ServeFile(w, r, home)
 }
-
