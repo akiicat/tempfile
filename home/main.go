@@ -15,7 +15,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Fprintln(w, path)
 
-	files, err := ioutil.ReadDir(".")
+	files, err := ioutil.ReadDir("./src")
 	if err != nil {
 		http.Error(w, "Unable to read files", http.StatusInternalServerError)
 		log.Printf("ioutil.ListFiles: %v", err)
