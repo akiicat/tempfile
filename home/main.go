@@ -27,7 +27,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "\t%v\n", f.Name())
 	}
 	fmt.Fprintln(w, "/srv/src/serverless_function_app")
-	files, err := ioutil.ReadDir("/srv/src/serverless_function_app")
+	files, err = ioutil.ReadDir("/srv/src/serverless_function_app")
 	if err != nil {
 		http.Error(w, "Unable to read files", http.StatusInternalServerError)
 		log.Printf("ioutil.ListFiles: %v", err)
