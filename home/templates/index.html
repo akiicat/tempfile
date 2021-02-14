@@ -260,7 +260,7 @@
                     var link = window.location.origin + "/" + info.token
 
                     $('#nonce-'+nonce).empty();
-                    $('#nonce-'+nonce).append($("<a class='btn btn-success btn-sm me-2' role='button' href='#'>").attr('onclick', 'copyToClipboard("' + link + '")').text('Copy'))
+                    $('#nonce-'+nonce).append($("<a class='btn btn-success btn-sm me-2 my-1' role='button' href='#'>").attr('onclick', 'copyToClipboard("' + link + '")').text('Copy'))
                     $('#nonce-'+nonce).append($("<a>").attr('href', info.token).text(link))
 
                     afterUpload(file, nonce, info)
