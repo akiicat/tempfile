@@ -230,16 +230,6 @@
             $.post('/postdownload', { key: nonce })
         }
 
-        function uploadProgress(event) {
-            if (event.lengthComputable) {
-                var percentComplete = (event.loaded / event.total) * 100;
-                //Do something with upload progress here
-                console.log(event.loaded)
-                console.log(event.total)
-                console.log(percentComplete)
-            }
-        }
-
         /**
          * Ajax request to Google Cloud Storage
          * @param url: signed url returned from server
@@ -255,13 +245,18 @@
                 crossDomain: true,
                 processData: false,
                 xhr: function() {
+                  // upload progress
                   // https://stackoverflow.com/questions/42216409/jquerys-uploadprogress-not-firing-in-ajax
                   var xhr = new window.XMLHttpRequest();
-                  xhr.upload.addEventListener("progress", uploadProgress, false);
+                  xhr.upload.addEventListener("progress", function(event) {
+                    if (event.lengthComputable) {
+                      var percentComplete = (event.loaded / event.total) * 100;
+                      $("#nonce-" + nonce + " .progress").css('--width', percentComplete + "%");
+                    }
+                  }, false);
                   return xhr;
                 },
                 success: function () {
-                    console.log("SUcces")
                     var link = window.location.origin + "/" + info.token
 
                     $('#nonce-'+nonce).empty();
