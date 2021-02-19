@@ -342,12 +342,6 @@
     </script>
 </head>
 <body>
-<!--
-  <form action="/" method="POST" enctype="multipart/form-data">
-      Select files: <input type="file" name="file" multiple onchange="handleFiles(this.files)">
-  </form>
-  <input id="files" name="files[]" type="file" class="file-input" />-->
-
   <!-- https://codepen.io/stephanrusu/pen/bGVYmMO -->
   <form action="/" method="POST" enctype="multipart/form-data">
     <div id="id_dropzone" class='container'>
@@ -376,7 +370,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
 
   <script>
-
+    // https://stackoverflow.com/questions/10261989/html5-javascript-drag-and-drop-file-from-external-window-windows-explorer
     var dropZone = document.getElementById('id_dropzone');
 
     // // Optional.   Show the copy icon when dragging over.  Seems to only work for chrome.
