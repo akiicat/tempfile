@@ -374,5 +374,25 @@
 
   <!-- Option 1: Bootstrap Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+
+  <script>
+
+    var dropZone = document.getElementById('id_dropzone');
+
+    // // Optional.   Show the copy icon when dragging over.  Seems to only work for chrome.
+    dropZone.addEventListener('dragover', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+    });
+
+    dropZone.addEventListener('drop', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+
+      handleFiles(e.dataTransfer.files); // Array of all files
+    });
+
+  </script>
 </body>
 </html>
