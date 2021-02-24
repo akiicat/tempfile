@@ -29,6 +29,8 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/akiirobot/tempfile v0.0.0-20200308050919-b8cf41369914 h1:KP1gIYuq9ROB23Qw45X6kSNgYQnmZOr8zWj0Rsd3qnU=
 github.com/akiirobot/tempfile v0.0.0-20200308050919-b8cf41369914/go.mod h1:2Elup/JbUxWXdUcCp6UMeKA502qmO0ulH8bhM7RFgNY=
+github.com/akiirobot/tempfile v0.0.0-20210224075653-d41be4fb5405 h1:maqKCEcNf3x3UZBx09dAwmN3+FCe3mCbyNdbS3+O8rI=
+github.com/akiirobot/tempfile v0.0.0-20210224075653-d41be4fb5405/go.mod h1:2Elup/JbUxWXdUcCp6UMeKA502qmO0ulH8bhM7RFgNY=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
