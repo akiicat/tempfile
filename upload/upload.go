@@ -3,6 +3,7 @@ package upload
 import (
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"net/http"
@@ -32,10 +33,15 @@ func UploadUrl(w http.ResponseWriter, r *http.Request) {
 	bucket := os.Getenv("BUCKET_NAME")
 
 	filename := r.PostFormValue("filename")
-	filesize := r.PostFormValue("filesize")
 	token := randString(3)
 	fullname := token + "/" + filename
 	nonce := r.PostFormValue("nonce")
+
+	filesize, err := strconv.Atoi(r.PostFormValue("filesize"))
+	if err != nil {
+		log.Printf("Filesize: %v", err)
+		http.Error(w, "400 - Status Bad Request", http.StatusBadRequest)
+	}
 
 	if fullname == "" {
 		log.Printf("Filename is empty")
