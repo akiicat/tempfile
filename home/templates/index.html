@@ -299,6 +299,7 @@
                 var nonce = makeNonce(5);
                 $.post("/upload", {
                         filename: file.name,
+                        filesize: file.size,
                         content_type: file.type,
                         nonce: nonce
                     },
