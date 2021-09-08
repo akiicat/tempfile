@@ -264,6 +264,8 @@
 
                     $('#nonce-'+nonce).empty();
                     $('#nonce-'+nonce).append($("<a class='btn btn-success btn-sm me-2 my-1' role='button' href='#'>").attr('onclick', 'copyToClipboard("' + link + '")').text('Copy'))
+                    $('#nonce-'+nonce).append($("<a class='btn btn-success btn-sm me-2 my-1' role='button' href='#'>").attr('onclick', 'copyToClipboard("curl -L \"' + link + '\" -o \"' + file.name + '\"")').text('Copy as curl'))
+                    $('#nonce-'+nonce).append($("<a class='btn btn-success btn-sm me-2 my-1' role='button' href='#'>").attr('onclick', 'copyToClipboard("wget \"' + link + '\" -O \"' + file.name + '\"")').text('Copy as wget'))
                     $('#nonce-'+nonce).append($("<a>").attr('href', info.token).text(link))
 
                     afterUpload(file, nonce, info)
