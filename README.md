@@ -37,7 +37,6 @@ gcloud alpha firestore databases create \
 Edit the **cors.json** to update the origin url.
 
 ```json
-# cors.json
 [
     {
       "origin": ["https://<example.com>", "http://localhost:3000"],
