@@ -1,50 +1,38 @@
 
-![](https://github.com/akiicat/tempfile/workflows/Deploy%20to%20Google%20Cloud/badge.svg)
-
 # Short Url on Google Cloud Function
 
-- [Setup Signed Url Service](sign)
+```shell
+pip install google-cloud-firestore
+```
 
+## GCP
 
-## Create Google Cloud Storage
+Init GCP
 
 ```sh
-export ProjectID=<project_id>
-export BucketName=<bucket_name>
+export GOOGLE_CLOUD_PROJECT=<project_id>
+export BUCKET=<bucket_name>
 
-# Set Project ID
-gcloud config set project ${ProjectID}
+gcloud auth login
+gcloud config set project PROJECT_ID
 
-# Create Bucket
-gsutil mb -b on -c Standard -p ${ProjectID} -l asia gs://${BucketName}
+# enable service (for new project and only first time)
+gcloud services enable run.googleapis.com
+
+# setup key for debugging
+export GOOGLE_APPLICATION_CREDENTIALS="path/to/xxxxxx-xxxxxx-xxxxxxxxxxxx.json"
 ```
 
-### Enable lifecycle management
-
-Lifecycle default 2 day
-
-```json
-# lifecycle.json
-{
-  "lifecycle": {
-    "rule": [
-      {
-        "action": {"type": "Delete"},
-        "condition": {
-          "age": 2
-        }
-      }
-    ]
-  }
-}
-```
+Create firestore
 
 ```shell
-gsutil lifecycle set lifecycle.json gs://${BucketName}
-gsutil lifecycle get gs://${BucketName}
+gcloud alpha firestore databases create \
+--database=note \
+--location=asia-east1 \
+--type=firestore-native
 ```
 
-### Setup Storage cors configuration
+## Setup Storage cors configuration
 
 Edit the **cors.json** to update the origin url.
 
@@ -61,14 +49,8 @@ Edit the **cors.json** to update the origin url.
 ```
 
 ```shell
-gsutil cors set cors.json gs://${BucketName}
-gsutil cors get gs://${BucketName}
-```
-
-## Setup Datastore Index
-
-```shell
-gcloud datastore create-indexes db/index.yaml
+gsutil cors set cors.json gs://${BUCKET}
+gsutil cors get gs://${BUCKET}
 ```
 
 ## Routes
@@ -79,54 +61,21 @@ Edit **firebase.json**
 firebase deploy --only hosting
 ```
 
-## Signed Url Key
+## Debug
 
 ```shell
-# Create Service Account
-gcloud iam service-accounts create "signed-url" --display-name "signed-url"
+python -m venv venv
+source venv/bin/activate
+pip install functions-framework
+pip install -r function/note/requirements.txt
+```
 
-# Grant Service Account with storage object admin
-gcloud projects add-iam-policy-binding ${ProjectID} \
-  --member serviceAccount:signed-url@${ProjectID}.iam.gserviceaccount.com \
-  --role roles/storage.objectAdmin
-
-# Create Key
-gcloud iam service-accounts keys create signed-url-key.json --iam-account signed-url@${ProjectID}.iam.gserviceaccount.com
+```shell
+./debug.sh
 ```
 
 ## Deploy
 
 ```shell
-gcloud functions deploy home --source=home --entry-point=HomePage --runtime=go113 --trigger-http --quiet --env-vars-file .env
-gcloud alpha functions add-iam-policy-binding home --member=allUsers --role=roles/cloudfunctions.invoker
-
-gcloud functions deploy upload --source=upload --entry-point=UploadUrl --runtime=go113 --trigger-http --quiet --env-vars-file .env
-gcloud alpha functions add-iam-policy-binding upload --member=allUsers --role=roles/cloudfunctions.invoker
-
-gcloud functions deploy download --source=download --entry-point=DownloadUrl --runtime=go113 --trigger-http --quiet --env-vars-file .env
-gcloud alpha functions add-iam-policy-binding download --member=allUsers --role=roles/cloudfunctions.invoker
+./deploy.sh
 ```
-
-## Deploy Key (Optional)
-
-```shell
-# Create Service Account
-gcloud iam service-accounts create "deploy-app-engine" --display-name "deploy-app-engine"
-
-# Grant Service Account with appengine admin, storage admin, and datastore index admin roles
-gcloud projects add-iam-policy-binding ${ProjectID} \
-  --member serviceAccount:deploy-app-engine@${ProjectID}.iam.gserviceaccount.com \
-  --role roles/appengine.appAdmin
-
-gcloud projects add-iam-policy-binding ${ProjectID} \
-  --member serviceAccount:deploy-app-engine@${ProjectID}.iam.gserviceaccount.com \
-  --role roles/storage.admin
-
-gcloud projects add-iam-policy-binding ${ProjectID} \
-  --member serviceAccount:deploy-app-engine@${ProjectID}.iam.gserviceaccount.com \
-  --role roles/datastore.indexAdmin
-
-# Create Key
-gcloud iam service-accounts keys create deploy-key.json --iam-account deploy-app-engine@${ProjectID}.iam.gserviceaccount.com
-```
-

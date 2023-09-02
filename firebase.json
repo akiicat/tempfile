@@ -1,18 +1,9 @@
 {
   "hosting": {
-    "public": "upload",
     "rewrites": [
       {
-        "source": "/upload",
-        "function": "upload"
-      },
-      {
-        "source": "/{,index,index.html}",
-        "function": "home"
-      },
-      {
         "source": "/**",
-        "function": "download"
+        "function": "tempfile"
       }
     ]
   }
